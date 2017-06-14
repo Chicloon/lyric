@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
+import { Link, hashHistory } from 'react-router';
+
+import query from '../queries/fetchSongs';
 
 class SongCreate extends Component {
     constructor(props) {
@@ -9,15 +14,17 @@ class SongCreate extends Component {
     handelSubmit(e) {
         e.preventDefault();
 
-        console.log(this.songTitle.value);
+        this.props.mutate({
+            variables: {
+                title: this.songTitle.value
+            },
+            refetchQueries: [{ query }],
+        })
+            .then(()=> hashHistory.push('/'))
+            .catch((error)=> console.log('Smth happened', error));
     }
 
-    // test =()=>{
-    //     console.log('test');
-    // }
-
     render() {
-        console.log(this.songTitle);
         return (
             <div>
                 <h3>Create a New Song</h3>
@@ -25,9 +32,22 @@ class SongCreate extends Component {
                     <label>Song Title:</label>
                     <input ref={input => this.songTitle = input } />
                 </form>
+                <Link 
+                    to='/'
+                     className="btn-floating btn-large red right">
+                Back </Link>
             </div>
         );
     }
 }
 
-export default SongCreate;
+const mutation = gql`
+mutation AddSong ($title: String){
+    addSong(title: $title){
+        id,
+        title
+    }
+}
+`;
+
+export default graphql(mutation)(SongCreate);
