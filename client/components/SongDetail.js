@@ -8,8 +8,6 @@ import LyricList from './LyricList';
 import query from '../queries/fetchSong';
 
 class SongDetail extends Component {
-    
-
     render() {
         console.log(this.props);
         const { song } = this.props.data;
